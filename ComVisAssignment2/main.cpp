@@ -85,7 +85,7 @@ int main(int argc, const char** argv)
 			VideoDemo(video);
 
 		case '2':
-			perspectiveTranforms(video, sources[0]);
+			perspectiveTranforms(video, sources);
 
 		default:
 			break;

@@ -154,6 +154,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="backgroundModels.cpp" />
+    <ClCompile Include="Binary.cpp" />
+    <ClCompile Include="Edges.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Video.cpp" />
   </ItemGroup>

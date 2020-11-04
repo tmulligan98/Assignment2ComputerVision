@@ -1,5 +1,5 @@
 #include "utilities.h"
-#include "Video.h"
+
 
 
 void VideoDemo(VideoCapture& default_video) {
@@ -41,11 +41,22 @@ void VideoDemo(VideoCapture& default_video) {
 	cv::destroyAllWindows();
 }
 
-void perspectiveTranforms(VideoCapture& default_video, Point2f sources[]) {
+void perspectiveTranforms(VideoCapture& default_video, Point2f sources[][4]) {
 
 	Point2f destination[4] = { Point2f(0,90), Point2f(90,90), Point2f(0,0), Point2f(90,0) };
-	Mat perspective_matrix;
-	Mat perspective_warped_image;
+	Mat perspective_matrices[6];
+	Mat perspective_warped_images[6];
+	Mat perspective_binary_image[6];
+
+	//Declare Gaussian background model
+	Ptr<BackgroundSubtractor> background;
+	background = createBackgroundSubtractorMOG2();
+
+	//Setup frame and text location
+	Point location(7, 13);
+	Scalar colour(0, 0, 255);
+	int line_step = 13;
+	bool isMovement;
 
 	int current_frame_count = 0;
 
@@ -58,19 +69,54 @@ void perspectiveTranforms(VideoCapture& default_video, Point2f sources[]) {
 			break;
 		}
 
-		perspective_warped_image = Mat::zeros(90, 90, frames.type());
+		//Perform perspective transformation on each postbox
+		perspective_warped_images[0] = Mat::zeros(90, 90, frames.type());
+		perspective_matrices[0] = getPerspectiveTransform(sources[0], destination);
+		warpPerspective(frames, perspective_warped_images[0], perspective_matrices[0], perspective_warped_images[0].size());
 
-		perspective_matrix = getPerspectiveTransform(sources, destination);
-		warpPerspective(frames, perspective_warped_image, perspective_matrix, perspective_warped_image.size());
+		/*perspective_warped_images[1] = Mat::zeros(90, 90, frames.type());
+		perspective_matrices[1] = getPerspectiveTransform(sources[1], destination);
+		warpPerspective(frames, perspective_warped_images[1], perspective_matrices[1], perspective_warped_images[1].size());
 
+		perspective_warped_images[2] = Mat::zeros(90, 90, frames.type());
+		perspective_matrices[2] = getPerspectiveTransform(sources[2], destination);
+		warpPerspective(frames, perspective_warped_images[2], perspective_matrices[2], perspective_warped_images[2].size());
+
+		perspective_warped_images[3] = Mat::zeros(90, 90, frames.type());
+		perspective_matrices[3] = getPerspectiveTransform(sources[3], destination);
+		warpPerspective(frames, perspective_warped_images[3], perspective_matrices[3], perspective_warped_images[3].size());
+
+		perspective_warped_images[4] = Mat::zeros(90, 90, frames.type());
+		perspective_matrices[4] = getPerspectiveTransform(sources[4], destination);
+		warpPerspective(frames, perspective_warped_images[4], perspective_matrices[4], perspective_warped_images[4].size());
+
+		perspective_warped_images[5] = Mat::zeros(90, 90, frames.type());
+		perspective_matrices[5] = getPerspectiveTransform(sources[5], destination);
+		warpPerspective(frames, perspective_warped_images[5], perspective_matrices[5], perspective_warped_images[5].size());*/
+
+		//Merge images to single window
+		/*Mat displayImage = Mat::zeros(Size(2*90, 3*90),CV_8UC3);
+
+		perspective_warped_images[0].rows = perspective_warped_images[0].rows + 90;
+		perspective_warped_images[0].copyTo(displayImage);*/
+
+		//Apply otsu thresholding to warped image
+		//perspective_binary_image[0] = otsuThresholding(perspective_warped_images[0]);
+
+		//Perform motion detection on perspective_binary imagess
+		isMovement = detectMovement(perspective_warped_images[0], background);
+		if(isMovement)
+			putText(perspective_warped_images[0], "Movement!!!!", Point2f(0, 10), FONT_HERSHEY_SIMPLEX, 0.4, colour);
+		
+		//If no movement, check edges of black-white pattern to see if post is present
 
 		
+		//putText(perspective_binary_image[0], "Top Left", Point2f(0, 10), FONT_HERSHEY_SIMPLEX, 0.4, colour);
+		//imshow("Top left binary", perspective_binary_image[0]);
+		imshow("Top Left", perspective_warped_images[0]);
 
-		//putText(frames, "Unedited video.", Point2f(0, 30), FONT_HERSHEY_SIMPLEX, 0.4, colour);
-		imshow("Top left", perspective_warped_image);
 
-		//location.y += line_step * 3 / 2;
-		while (current_frame_count < 100000000) {
+		while (current_frame_count < 250000000) {
 			current_frame_count++;
 		}
 		current_frame_count = 0;

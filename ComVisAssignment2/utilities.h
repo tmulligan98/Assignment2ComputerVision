@@ -10,3 +10,15 @@
 
 using namespace std;
 using namespace cv;
+
+
+//Video functions
+void VideoDemo(VideoCapture& default_video);
+void perspectiveTranforms(VideoCapture& default_video, Point2f sources[][4]);
+
+//Binary functions
+Mat otsuThresholding(Mat &frame);
+Mat adaptiveThresholding(Mat &frame);
+
+//Movement detection
+bool detectMovement(Mat frame, Ptr<BackgroundSubtractor> background_model);
