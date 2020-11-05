@@ -25,4 +25,7 @@ bool detectMovementGMM(Mat frame, Ptr<BackgroundSubtractor> background_model);
 bool detectMovement_FrameDifference(Mat cur_frame, Mat &prev_frame);
 
 //Edges detection
-bool computeEdges(Mat images);
+bool* computeEdges(Mat images[6]);
+
+//Useful Functions
+Mat RecreateFrame(Mat perspectives[6]);

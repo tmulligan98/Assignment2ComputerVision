@@ -158,6 +158,7 @@
     <ClCompile Include="Binary.cpp" />
     <ClCompile Include="Edges.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="UsefulFunctions.cpp" />
     <ClCompile Include="Video.cpp" />
   </ItemGroup>
   <ItemGroup>

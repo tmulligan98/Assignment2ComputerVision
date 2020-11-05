@@ -48,6 +48,9 @@ void perspectiveTranforms(VideoCapture& default_video, Point2f sources[][4]) {
 	Mat perspective_warped_images[6];
 	Mat perspective_binary_image[6];
 	Mat prev_frame;
+	Mat combined;
+
+	bool *post;
 
 	//Declare Gaussian background model
 	Ptr<BackgroundSubtractor> background;
@@ -71,11 +74,12 @@ void perspectiveTranforms(VideoCapture& default_video, Point2f sources[][4]) {
 		}
 
 		//Perform perspective transformation on each postbox
+
 		perspective_warped_images[0] = Mat::zeros(90, 90, frames.type());
 		perspective_matrices[0] = getPerspectiveTransform(sources[0], destination);
 		warpPerspective(frames, perspective_warped_images[0], perspective_matrices[0], perspective_warped_images[0].size());
 
-		/*perspective_warped_images[1] = Mat::zeros(90, 90, frames.type());
+		perspective_warped_images[1] = Mat::zeros(90, 90, frames.type());
 		perspective_matrices[1] = getPerspectiveTransform(sources[1], destination);
 		warpPerspective(frames, perspective_warped_images[1], perspective_matrices[1], perspective_warped_images[1].size());
 
@@ -93,34 +97,28 @@ void perspectiveTranforms(VideoCapture& default_video, Point2f sources[][4]) {
 
 		perspective_warped_images[5] = Mat::zeros(90, 90, frames.type());
 		perspective_matrices[5] = getPerspectiveTransform(sources[5], destination);
-		warpPerspective(frames, perspective_warped_images[5], perspective_matrices[5], perspective_warped_images[5].size());*/
+		warpPerspective(frames, perspective_warped_images[5], perspective_matrices[5], perspective_warped_images[5].size());
 
-		//Merge images to single window
-		/*Mat displayImage = Mat::zeros(Size(2*90, 3*90),CV_8UC3);
-
-		perspective_warped_images[0].rows = perspective_warped_images[0].rows + 90;
-		perspective_warped_images[0].copyTo(displayImage);*/
-
-		//Apply otsu thresholding to warped image
-		//perspective_binary_image[0] = otsuThresholding(perspective_warped_images[0]);
+		
+		combined = RecreateFrame(perspective_warped_images);
 
 		//Perform motion detection on entire frame
-		isMovement = detectMovement_FrameDifference(frames, prev_frame);
+		//isMovement = detectMovement_FrameDifference(frames, prev_frame);
 		//If no movement, look for edges in boxes. This is where we figure out if we actually have post or not
-		if (!isMovement) {
+		//if (!isMovement) {
 
-			if (computeEdges(perspective_warped_images[0]))
-			putText(perspective_warped_images[0], "Post", Point2f(0, 10), FONT_HERSHEY_SIMPLEX, 0.4, colour);
-		
+			//if (computeEdges(perspective_warped_images)
+			//putText(combined, "Post", Point2f(0, 10), FONT_HERSHEY_SIMPLEX, 0.4, colour);
+		post = computeEdges(perspective_warped_images);
 			
-		}
-		else putText(perspective_warped_images[0], "Movement!!!!", Point2f(0, 10), FONT_HERSHEY_SIMPLEX, 0.4, colour);
+		//}
+		//else putText(combined, "Movement!!!!", Point2f(0, 10), FONT_HERSHEY_SIMPLEX, 0.4, colour);
 		
 		//If no movement, check edges of black-white pattern to see if post is present
 
 		
 		//putText(perspective_binary_image[0], "Top Left", Point2f(0, 10), FONT_HERSHEY_SIMPLEX, 0.4, colour);
-		imshow("Top left", perspective_warped_images[0]);
+		//imshow("Combined", combined);
 		//imshow("Full Scene", frames);
 
 
