@@ -21,4 +21,8 @@ Mat otsuThresholding(Mat &frame);
 Mat adaptiveThresholding(Mat &frame);
 
 //Movement detection
-bool detectMovement(Mat frame, Ptr<BackgroundSubtractor> background_model);
+bool detectMovementGMM(Mat frame, Ptr<BackgroundSubtractor> background_model);
+bool detectMovement_FrameDifference(Mat cur_frame, Mat &prev_frame);
+
+//Edges detection
+bool computeEdges(Mat images);

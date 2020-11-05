@@ -1,6 +1,6 @@
 #include "utilities.h"
 
-bool detectMovement(Mat frame, Ptr<BackgroundSubtractor> background_model) {
+bool detectMovementGMM(Mat frame, Ptr<BackgroundSubtractor> background_model) {
 
 	Mat foreground_mask;
 	Mat gray_frame;
@@ -20,4 +20,41 @@ bool detectMovement(Mat frame, Ptr<BackgroundSubtractor> background_model) {
 	cout << contours.size() << endl;
 	if (contours.size() > 40) return true;
 		return false;
+}
+
+bool detectMovement_FrameDifference(Mat cur_frame, Mat &prev_frame) {
+
+	//Will detect motion. But what about someone who's just decided to park themselves infront of the camera?
+	//Well we won't detect movement. So we'll have to check if we can see the stripes
+
+	static Mat diff_frame;
+
+	cvtColor(cur_frame, cur_frame, COLOR_BGR2GRAY);
+
+	if(!prev_frame.empty()){
+
+		absdiff(cur_frame, prev_frame, diff_frame);
+		//Threshold the difference image.
+		threshold(diff_frame, diff_frame, 50, 255, THRESH_BINARY);
+
+		//Having looked at the amount of non-zero values for frames with movement...
+		//cout << countNonZero(diff_frame) << endl;
+
+		prev_frame = cur_frame;
+		
+		if (countNonZero(diff_frame) >= 500) return true;
+
+
+		//No movement? Check if we can see the black and white stripes. If not we have a problem.
+		return false;
+
+
+	}
+	else {
+		prev_frame = cur_frame;
+		return false;
+	}
+	
+
+
 }

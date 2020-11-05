@@ -47,6 +47,7 @@ void perspectiveTranforms(VideoCapture& default_video, Point2f sources[][4]) {
 	Mat perspective_matrices[6];
 	Mat perspective_warped_images[6];
 	Mat perspective_binary_image[6];
+	Mat prev_frame;
 
 	//Declare Gaussian background model
 	Ptr<BackgroundSubtractor> background;
@@ -103,22 +104,30 @@ void perspectiveTranforms(VideoCapture& default_video, Point2f sources[][4]) {
 		//Apply otsu thresholding to warped image
 		//perspective_binary_image[0] = otsuThresholding(perspective_warped_images[0]);
 
-		//Perform motion detection on perspective_binary imagess
-		isMovement = detectMovement(perspective_warped_images[0], background);
-		if(isMovement)
-			putText(perspective_warped_images[0], "Movement!!!!", Point2f(0, 10), FONT_HERSHEY_SIMPLEX, 0.4, colour);
+		//Perform motion detection on entire frame
+		isMovement = detectMovement_FrameDifference(frames, prev_frame);
+		//If no movement, look for edges in boxes. This is where we figure out if we actually have post or not
+		if (!isMovement) {
+
+			if (computeEdges(perspective_warped_images[0]))
+			putText(perspective_warped_images[0], "Post", Point2f(0, 10), FONT_HERSHEY_SIMPLEX, 0.4, colour);
+		
+			
+		}
+		else putText(perspective_warped_images[0], "Movement!!!!", Point2f(0, 10), FONT_HERSHEY_SIMPLEX, 0.4, colour);
 		
 		//If no movement, check edges of black-white pattern to see if post is present
 
 		
 		//putText(perspective_binary_image[0], "Top Left", Point2f(0, 10), FONT_HERSHEY_SIMPLEX, 0.4, colour);
-		//imshow("Top left binary", perspective_binary_image[0]);
-		imshow("Top Left", perspective_warped_images[0]);
+		imshow("Top left", perspective_warped_images[0]);
+		//imshow("Full Scene", frames);
 
 
-		while (current_frame_count < 250000000) {
+
+		while (current_frame_count < 250000000) 
 			current_frame_count++;
-		}
+		
 		current_frame_count = 0;
 
 		int choice = waitKey(1);
