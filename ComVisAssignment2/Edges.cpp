@@ -1,15 +1,24 @@
 #include "utilities.h"
 
 bool* computeEdges(Mat images[6]) {
-	int counts[6] = {};
+
+	//Compute edges, return bool-pointer indicating which boxes have post
+
+
+	int counts1[NUMBER_BOXES] = {};
+	int counts2[NUMBER_BOXES] = {};
+	int counts3[NUMBER_BOXES] = {};
+	int counts4[NUMBER_BOXES] = {};
+
 	Mat gray_images[6];
 	Mat binary_edges[6];
 	Mat combined;
 	bool post_present[6];
 	//Just chose y = 20 to bisect the edges of the black-white pattern
-	int y = 20;
+	int y = 10;
 	int i = 0;
 
+	Scalar colour(255);
 	
 	for (i = 0; i < 6; i++) { 
 		
@@ -23,23 +32,39 @@ bool* computeEdges(Mat images[6]) {
 		//3. use the built in canny function
 		//again using 3 as kernel size for time being
 		//Canny has thresholding built in. I have set the low threshold (and hence low threshold ratio) to zero
-		Canny(gray_images[i], binary_edges[i], 90, 270);
+		Canny(gray_images[i], binary_edges[i], 50, 110);
 
 	}
 
-	//combined = RecreateFrame(binary_edges);
+	combined = RecreateFrame(binary_edges);
 	
 	//now need to work through the outputted image and count the edges produced by canny.
-	//imshow("Binary Edge image", combined);
+	
 	for (i = 0; i < 6; i++) {
 		for (int x = 0; x < binary_edges[i].cols; x++) {
-			if (binary_edges[i].at<uchar>(y, x) > 0) counts[i]++;
+			if (binary_edges[i].at<uchar>(10, x) > 0) counts1[i]++;
+			if (binary_edges[i].at<uchar>(20, x) > 0) counts2[i]++;
+			if (binary_edges[i].at<uchar>(30, x) > 0) counts3[i]++;
+			if (binary_edges[i].at<uchar>(40, x) > 0) counts4[i]++;
+
 		}
 
-		if (counts[i] == 10 || counts[i] == 11) post_present[i] = true;
+		if (closeEnough(counts1[i], counts2[i], counts3[i], counts4[i])) post_present[i] = false;
+		else post_present[i] = true;
 	}
 	
-	//cout << counts[0] << " " << counts[1] << " " << counts[2] << " " << counts[3] << " " << counts[4] << " " << counts[5] << endl;
+	//cout << counts1[0] << " " << counts2[0] << " " << counts1[1] << " " << counts2[1] << endl;
+
+
+	if(post_present[0]) putText(combined, "Post", Point2f(0, 10), FONT_HERSHEY_SIMPLEX, 0.4, colour);	//Top left...
+	if(post_present[1]) putText(combined, "Post", Point2f(90, 10), FONT_HERSHEY_SIMPLEX, 0.4, colour);
+	if(post_present[2]) putText(combined, "Post", Point2f(0, 180), FONT_HERSHEY_SIMPLEX, 0.4, colour);
+	if(post_present[3]) putText(combined, "Post", Point2f(90, 180), FONT_HERSHEY_SIMPLEX, 0.4, colour);
+	if(post_present[4]) putText(combined, "Post", Point2f(0, 270), FONT_HERSHEY_SIMPLEX, 0.4, colour);
+	if(post_present[5]) putText(combined, "Post", Point2f(90, 270), FONT_HERSHEY_SIMPLEX, 0.4, colour);	//Bottom right...
+
+
+	imshow("Binary Edge image", combined);
 
 	//From looking at the output of the count, we get 10 edges for a empty postbox.
 

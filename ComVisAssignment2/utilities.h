@@ -7,9 +7,11 @@
 #include <iostream>
 #include <iostream>
 #define PI 3.14159265358979323846
+#define NUMBER_BOXES 6
 
 using namespace std;
 using namespace cv;
+
 
 
 //Video functions
@@ -29,3 +31,4 @@ bool* computeEdges(Mat images[6]);
 
 //Useful Functions
 Mat RecreateFrame(Mat perspectives[6]);
+bool closeEnough(int a, int b, int c, int d);

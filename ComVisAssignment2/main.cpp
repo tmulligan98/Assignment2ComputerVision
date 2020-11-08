@@ -75,6 +75,7 @@ int main(int argc, const char** argv)
 	
 	int choice;
 	cout << "Press 1 to play video" << endl;
+	cout << "Press 2 to look at posstboxes" << endl;
 	do {
 		imshow("Welcome", image);
 		choice = cv::waitKey();

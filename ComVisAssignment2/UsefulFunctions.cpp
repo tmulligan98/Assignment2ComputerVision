@@ -20,3 +20,18 @@ Mat RecreateFrame(Mat perspectives[6]) {
 
 	return output;
 }
+
+bool closeEnough(int a, int b, int c, int d) {
+
+	int correct = 0;
+
+	
+	if (a >= 10 && a <= 14) correct++;
+	if (b >= 10 && b <= 14) correct++;
+	if (c >= 10 && c <= 14) correct++;
+	if (d >= 10 && d <= 14) correct++;
+
+	if (correct >= 2) return true;
+	return false;
+
+}

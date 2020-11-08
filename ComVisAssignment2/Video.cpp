@@ -49,6 +49,7 @@ void perspectiveTranforms(VideoCapture& default_video, Point2f sources[][4]) {
 	Mat perspective_binary_image[6];
 	Mat prev_frame;
 	Mat combined;
+	int i;
 
 	bool *post;
 
@@ -103,27 +104,35 @@ void perspectiveTranforms(VideoCapture& default_video, Point2f sources[][4]) {
 		combined = RecreateFrame(perspective_warped_images);
 
 		//Perform motion detection on entire frame
-		//isMovement = detectMovement_FrameDifference(frames, prev_frame);
+		isMovement = detectMovement_FrameDifference(frames, prev_frame);
+
 		//If no movement, look for edges in boxes. This is where we figure out if we actually have post or not
-		//if (!isMovement) {
+		if (!isMovement) {
+			post = computeEdges(perspective_warped_images);
 
-			//if (computeEdges(perspective_warped_images)
-			//putText(combined, "Post", Point2f(0, 10), FONT_HERSHEY_SIMPLEX, 0.4, colour);
-		post = computeEdges(perspective_warped_images);
+			if(post[0]) putText(combined, "Post", Point2f(0, 10), FONT_HERSHEY_SIMPLEX, 0.4, colour);	//Top left...
+			if(post[1]) putText(combined, "Post", Point2f(90, 10), FONT_HERSHEY_SIMPLEX, 0.4, colour);
+			if(post[2]) putText(combined, "Post", Point2f(0, 180), FONT_HERSHEY_SIMPLEX, 0.4, colour);
+			if(post[3]) putText(combined, "Post", Point2f(90, 180), FONT_HERSHEY_SIMPLEX, 0.4, colour);
+			if(post[4]) putText(combined, "Post", Point2f(0, 270), FONT_HERSHEY_SIMPLEX, 0.4, colour);
+			if(post[5]) putText(combined, "Post", Point2f(90, 270), FONT_HERSHEY_SIMPLEX, 0.4, colour);	//Bottom right...
+
+			*post = {};
+		
 			
-		//}
-		//else putText(combined, "Movement!!!!", Point2f(0, 10), FONT_HERSHEY_SIMPLEX, 0.4, colour);
+		}
+		else putText(combined, "Movement!!!!", Point2f(0, 10), FONT_HERSHEY_SIMPLEX, 0.8, colour);
 		
-		//If no movement, check edges of black-white pattern to see if post is present
+		imshow("Perspectives combined", combined);
 
 		
-		//putText(perspective_binary_image[0], "Top Left", Point2f(0, 10), FONT_HERSHEY_SIMPLEX, 0.4, colour);
+		
 		//imshow("Combined", combined);
 		//imshow("Full Scene", frames);
 
 
 
-		while (current_frame_count < 250000000) 
+		while (current_frame_count < 100000000) 
 			current_frame_count++;
 		
 		current_frame_count = 0;
