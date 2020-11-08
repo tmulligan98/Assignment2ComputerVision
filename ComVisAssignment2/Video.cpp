@@ -2,7 +2,7 @@
 
 
 
-void VideoDemo(VideoCapture& default_video) {
+void VideoDemo(VideoCapture& default_video, Point2f sources[][4]) {
 
 	//Setup frame and text location
 	Point location(7, 13);
@@ -18,13 +18,18 @@ void VideoDemo(VideoCapture& default_video) {
 		Mat frames;
 		default_video >> frames;
 
+		//frames = otsuThresholding(frames);
+
 		if (frames.empty()) {
 			break;
 		}
 
-		putText(frames, "Unedited video.", Point2f(0, 30), FONT_HERSHEY_SIMPLEX, 0.4, colour);
-		imshow("Welcome", frames);
+		//putText(frames, "Unedited video.", Point2f(0, 30), FONT_HERSHEY_SIMPLEX, 0.4, colour);
+		//imshow("Welcome", frames);
 		
+		createMask(frames, sources);
+
+
 		location.y += line_step * 3 / 2;
 		while (current_frame_count < 100000000) {
 			current_frame_count++;
@@ -54,8 +59,8 @@ void perspectiveTranforms(VideoCapture& default_video, Point2f sources[][4]) {
 	bool *post;
 
 	//Declare Gaussian background model
-	Ptr<BackgroundSubtractor> background;
-	background = createBackgroundSubtractorMOG2();
+	//Ptr<BackgroundSubtractor> background;
+	//background = createBackgroundSubtractorMOG2();
 
 	//Setup frame and text location
 	Point location(7, 13);

@@ -83,7 +83,7 @@ int main(int argc, const char** argv)
 
 		switch (choice) {
 		case '1':
-			VideoDemo(video);
+			VideoDemo(video, sources);
 
 		case '2':
 			perspectiveTranforms(video, sources);

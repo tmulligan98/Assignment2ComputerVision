@@ -15,7 +15,7 @@ using namespace cv;
 
 
 //Video functions
-void VideoDemo(VideoCapture& default_video);
+void VideoDemo(VideoCapture& default_video, Point2f sources[][4]);
 void perspectiveTranforms(VideoCapture& default_video, Point2f sources[][4]);
 
 //Binary functions
@@ -32,3 +32,4 @@ bool* computeEdges(Mat images[6]);
 //Useful Functions
 Mat RecreateFrame(Mat perspectives[6]);
 bool closeEnough(int a, int b, int c, int d);
+void createMask(Mat frame, Point2f sources[][4]);

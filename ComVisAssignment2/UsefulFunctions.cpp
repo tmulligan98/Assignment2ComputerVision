@@ -35,3 +35,44 @@ bool closeEnough(int a, int b, int c, int d) {
 	return false;
 
 }
+
+void createMask(Mat frame, Point2f sources[][4]) {
+	Mat regionsOfInterest[6];
+	
+	//Otsu threshold the frame.
+	frame = otsuThresholding(frame);
+
+	//Create empty mask with same dimensions as frame
+	Mat mask1 = Mat::zeros(frame.rows, frame.cols, frame.type());
+	//mask1.setTo(Scalar(255));
+	Mat mask2;
+
+	//Copy frame to mask.
+	frame.copyTo(mask2);
+
+	//Define regions of interest for each zone to mask off.
+	//Rect2f(topleft(of region) x, topleft y, width, height)
+	regionsOfInterest[0] = mask1(Rect2f(sources[0][0].x, sources[0][0].y, sources[0][1].x - sources[0][0].x, sources[0][2].y - sources[0][0].y)); //Top left
+	regionsOfInterest[1] = mask1(Rect2f(sources[1][0].x, sources[1][0].y, sources[1][1].x - sources[1][0].x, sources[1][2].y - sources[1][0].y));
+	regionsOfInterest[2] = mask1(Rect2f(sources[2][0].x, sources[2][0].y, sources[2][1].x - sources[2][0].x, sources[2][2].y - sources[2][0].y));
+	regionsOfInterest[3] = mask1(Rect2f(sources[3][0].x, sources[3][0].y, sources[3][1].x - sources[3][0].x, sources[3][2].y - sources[3][0].y));
+	regionsOfInterest[4] = mask1(Rect2f(sources[4][0].x, sources[4][0].y, sources[4][1].x - sources[4][0].x, sources[4][2].y - sources[4][0].y));
+	regionsOfInterest[5] = mask1(Rect2f(sources[5][0].x, sources[5][0].y, sources[5][1].x - sources[5][0].x, sources[5][2].y - sources[5][0].y)); // Bottom right
+
+	//Now have zero regions for black-white patterns
+
+	//Invert regions, combine to mask.
+	for (int i = 0; i < NUMBER_BOXES; i++) bitwise_not(regionsOfInterest[i], regionsOfInterest[i], noArray());
+
+	//Invert overall mask now.
+	bitwise_not(mask1, mask1, noArray());
+	bitwise_and(frame, mask1, mask1, noArray());
+	
+	//Now have image with mostly just frame of postboxes!
+
+
+
+	imshow("Masked binary image", mask1);
+
+
+}
