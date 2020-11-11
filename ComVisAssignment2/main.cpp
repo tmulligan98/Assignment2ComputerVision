@@ -74,8 +74,16 @@ int main(int argc, const char** argv)
 
 	
 	int choice;
+	Point point(20, 20);
+	Scalar colour(0, 0, 255);
 	cout << "Press 1 to play video" << endl;
 	cout << "Press 2 to look at posstboxes" << endl;
+
+	putText(image, "Press 1 to play original video.", point, FONT_HERSHEY_COMPLEX, 0.4, colour);
+	point.y += 40;
+	putText(image, "Press 2 view assignment demonstration.", point, FONT_HERSHEY_COMPLEX, 0.4, colour);
+
+
 	do {
 		imshow("Welcome", image);
 		choice = cv::waitKey();
@@ -84,13 +92,16 @@ int main(int argc, const char** argv)
 		switch (choice) {
 		case '1':
 			VideoDemo(video, sources);
-
+			
+			break;
 		case '2':
 			perspectiveTranforms(video, sources);
+			break;
 
 		default:
 			break;
 		}
+		video.open(filename);
 	} while (choice != 'x');
 	
 	

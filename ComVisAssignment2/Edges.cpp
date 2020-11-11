@@ -20,6 +20,7 @@ bool* computeEdges(Mat images[6]) {
 
 	Scalar colour(255);
 	
+	//Perform Canny on each perspective transform
 	for (i = 0; i < 6; i++) { 
 		
 		//1. perform gaussian blur to smooth the image
@@ -36,10 +37,19 @@ bool* computeEdges(Mat images[6]) {
 
 	}
 
+	//Combine the sections to one
 	combined = RecreateFrame(binary_edges);
 	
 	//now need to work through the outputted image and count the edges produced by canny.
-	
+	//Method: 
+	//1) Take four horizontal lines across each postbox
+	//2) Count the number of edges the horizontal lines bisect
+	//3) Perfectly visible post box lines will give 10 lines only
+	//Since things are rarely perfect, I have a "closeEnough" function
+
+	//Potential improvement: When counting an edge, in order to be stricter about what we count, check if the pixels to the left and right are 0.
+	//But this work pretty well, I only spotted 2/3 false negatives out of 95 frames
+
 	for (i = 0; i < 6; i++) {
 		for (int x = 0; x < binary_edges[i].cols; x++) {
 			if (binary_edges[i].at<uchar>(10, x) > 0) counts1[i]++;

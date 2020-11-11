@@ -31,6 +31,7 @@ bool closeEnough(int a, int b, int c, int d) {
 	if (c >= 10 && c <= 14) correct++;
 	if (d >= 10 && d <= 14) correct++;
 
+	//If two or more of the horizontal lines have counted between 10 and 14 edges, then return true.
 	if (correct >= 2) return true;
 	return false;
 
@@ -75,4 +76,12 @@ void createMask(Mat frame, Point2f sources[][4]) {
 	imshow("Masked binary image", mask1);
 
 
+}
+
+bool isEmpty(bool arr[NUMBER_BOXES]) {
+
+	for (int i = 0; i < NUMBER_BOXES; i++) {
+		if (arr[i] == true) return false;
+	}
+	return true;
 }

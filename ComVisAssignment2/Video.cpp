@@ -24,13 +24,14 @@ void VideoDemo(VideoCapture& default_video, Point2f sources[][4]) {
 			break;
 		}
 
-		//putText(frames, "Unedited video.", Point2f(0, 30), FONT_HERSHEY_SIMPLEX, 0.4, colour);
-		//imshow("Welcome", frames);
+		putText(frames, "Unedited video.", Point2f(0, 30), FONT_HERSHEY_SIMPLEX, 0.4, colour);
+		imshow("Welcome", frames);
 		
-		createMask(frames, sources);
+		//Below is the function call to view the post-box frame "mask"
+		//createMask(frames, sources);
 
 
-		location.y += line_step * 3 / 2;
+		
 		while (current_frame_count < 100000000) {
 			current_frame_count++;
 		}
@@ -54,7 +55,7 @@ void perspectiveTranforms(VideoCapture& default_video, Point2f sources[][4]) {
 	Mat perspective_binary_image[6];
 	Mat prev_frame;
 	Mat combined;
-	int i;
+	int frame_count = 1;
 
 	bool *post;
 
@@ -106,6 +107,7 @@ void perspectiveTranforms(VideoCapture& default_video, Point2f sources[][4]) {
 		warpPerspective(frames, perspective_warped_images[5], perspective_matrices[5], perspective_warped_images[5].size());
 
 		
+		//Combine the perspective frames in to one larger picture. Useful to actually see what's going on.
 		combined = RecreateFrame(perspective_warped_images);
 
 		//Perform motion detection on entire frame
@@ -114,22 +116,48 @@ void perspectiveTranforms(VideoCapture& default_video, Point2f sources[][4]) {
 		//If no movement, look for edges in boxes. This is where we figure out if we actually have post or not
 		if (!isMovement) {
 			post = computeEdges(perspective_warped_images);
-
-			if(post[0]) putText(combined, "Post", Point2f(0, 10), FONT_HERSHEY_SIMPLEX, 0.4, colour);	//Top left...
-			if(post[1]) putText(combined, "Post", Point2f(90, 10), FONT_HERSHEY_SIMPLEX, 0.4, colour);
-			if(post[2]) putText(combined, "Post", Point2f(0, 180), FONT_HERSHEY_SIMPLEX, 0.4, colour);
-			if(post[3]) putText(combined, "Post", Point2f(90, 180), FONT_HERSHEY_SIMPLEX, 0.4, colour);
-			if(post[4]) putText(combined, "Post", Point2f(0, 270), FONT_HERSHEY_SIMPLEX, 0.4, colour);
-			if(post[5]) putText(combined, "Post", Point2f(90, 270), FONT_HERSHEY_SIMPLEX, 0.4, colour);	//Bottom right...
+			if (!isEmpty(post)) {
+				cout << frame_count << ", Post in, ";
+				if (post[0]) {
+					putText(combined, "Post", Point2f(0, 10), FONT_HERSHEY_SIMPLEX, 0.4, colour);
+					cout << "1 ";
+				}	//Top left...
+				if (post[1]) {
+					putText(combined, "Post", Point2f(90, 10), FONT_HERSHEY_SIMPLEX, 0.4, colour);
+					cout << "2 ";
+				}
+				if (post[2]) {
+					putText(combined, "Post", Point2f(0, 180), FONT_HERSHEY_SIMPLEX, 0.4, colour);
+					cout << "3 ";
+				}
+				if (post[3]) {
+					putText(combined, "Post", Point2f(90, 180), FONT_HERSHEY_SIMPLEX, 0.4, colour);
+					cout << "4 ";
+				}
+				if (post[4]) {
+					putText(combined, "Post", Point2f(0, 270), FONT_HERSHEY_SIMPLEX, 0.4, colour);
+					cout << "5 ";
+				}
+				if (post[5]) {
+					putText(combined, "Post", Point2f(90, 270), FONT_HERSHEY_SIMPLEX, 0.4, colour);
+					cout << "6 ";
+				}	//Bottom right...
+			}
+			else  cout << frame_count << ", " << "No Post"; 
+			
+			cout << endl;
 
 			*post = {};
 		
 			
 		}
-		else putText(combined, "Movement!!!!", Point2f(0, 10), FONT_HERSHEY_SIMPLEX, 0.8, colour);
+		else {
+			putText(combined, "Movement!!!!", Point2f(0, 30), FONT_HERSHEY_DUPLEX, 0.6, colour);
+			cout << frame_count << ", " << "View Obscured" << endl;
+		}
 		
 		imshow("Perspectives combined", combined);
-
+		
 		
 		
 		//imshow("Combined", combined);
@@ -145,7 +173,7 @@ void perspectiveTranforms(VideoCapture& default_video, Point2f sources[][4]) {
 		int choice = waitKey(1);
 		if (choice == 1) break;
 
-
+		frame_count++;
 	}
 
 	default_video.release();

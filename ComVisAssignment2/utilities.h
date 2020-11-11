@@ -33,3 +33,4 @@ bool* computeEdges(Mat images[6]);
 Mat RecreateFrame(Mat perspectives[6]);
 bool closeEnough(int a, int b, int c, int d);
 void createMask(Mat frame, Point2f sources[][4]);
+bool isEmpty(bool arr[NUMBER_BOXES]);
