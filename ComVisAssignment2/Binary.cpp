@@ -1,16 +1,14 @@
 #include "utilities.h"
 
-Mat original_image, binary_image;
-int cur_thres, max_thres;
-
-//Need a way of performing best binary thresholding given images that is effected...
-//By different lighting
+//Mat original_image, binary_image;
+//
 
 //Otsu thresholding: Looks at all possible threshold values across the entire image. Picks a threshold...
 //value where the sum of the foreground spread is similar to sum of background spread
 //(spread of histogram values)
 
 Mat otsuThresholding(Mat &frame) {
+	int cur_thres, max_thres;
 
 	cur_thres = 128;
 	max_thres = 255;
@@ -24,9 +22,5 @@ Mat otsuThresholding(Mat &frame) {
 	cvtColor(otsu_image, otsu_display_image, COLOR_GRAY2BGR);
 
 	return otsu_display_image;
-
 }
 
-//Mat adaptiveThresholding(Mat &frame) {
-//
-//}

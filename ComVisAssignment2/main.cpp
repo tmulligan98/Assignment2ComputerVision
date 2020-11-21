@@ -1,6 +1,8 @@
 // ComVisAssignment2.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
+//Amount of files is probably unecessary, but for my own sake I've kept everything separated out for future editing
+
 
 #include "utilities.h"
 #include "Video.h"
@@ -37,9 +39,9 @@ int main(int argc, const char** argv)
 	const char* file_location = "Media/";
 	const char* imageFile = "TrinityCampanile1.JPG";
 	const char* videofile = "PostboxesWithLines.avi";
+	const char* template_file = "template.JPG";
 	
 	//Initialise 2d array of postbox locations
-
 	Point2f sources[NUMBER_OF_POSTBOXES][4] = {
 		{Point2f(26,113), Point2f(106,113), Point2f(13, 133), Point2f(107, 134)},
 		{Point2f(119, 115),Point2f(199, 115),Point2f(119, 135),Point2f(210, 136)},
@@ -51,13 +53,15 @@ int main(int argc, const char** argv)
 
 	
 
-
-	
 	//Get image file and load.
-	Mat image;
-	string imgfilename(file_location);
+	Mat image, frame, template_img;
+	string imgfilename(file_location), tmpfilename(file_location);
+	
 	imgfilename.append(imageFile);
 	image = imread(imgfilename, IMREAD_COLOR);
+	tmpfilename.append(template_file);
+	template_img = imread(tmpfilename, IMREAD_COLOR);
+
 	//Check that image exists
 	if (image.empty()) {
 		cout << "Could not read image" << endl;
@@ -71,17 +75,19 @@ int main(int argc, const char** argv)
 	video.open(filename);
 	
 	
-
+	
 	
 	int choice;
 	Point point(20, 20);
 	Scalar colour(0, 0, 255);
 	cout << "Press 1 to play video" << endl;
-	cout << "Press 2 to look at posstboxes" << endl;
+	cout << "Press 2 to look at postboxes" << endl;
 
+	//Display text on welcoming image
 	putText(image, "Press 1 to play original video.", point, FONT_HERSHEY_COMPLEX, 0.4, colour);
 	point.y += 40;
 	putText(image, "Press 2 view assignment demonstration.", point, FONT_HERSHEY_COMPLEX, 0.4, colour);
+
 
 
 	do {
@@ -91,16 +97,24 @@ int main(int argc, const char** argv)
 
 		switch (choice) {
 		case '1':
+			//Display default video
 			VideoDemo(video, sources);
-			
 			break;
 		case '2':
-			perspectiveTranforms(video, sources);
+			//Perform processes
+			ProcessVideo(video, sources);
+			break;
+
+		case '3':
+			//Try out template matching to find locations of post boxes...
+			video >> frame;
+			findLocations(frame, template_img);
 			break;
 
 		default:
 			break;
 		}
+		//Reload video
 		video.open(filename);
 	} while (choice != 'x');
 	

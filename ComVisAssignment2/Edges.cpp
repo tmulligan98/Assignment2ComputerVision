@@ -1,6 +1,6 @@
 #include "utilities.h"
 
-bool* computeEdges(Mat images[6]) {
+bool* computeEdges(Mat images[NUMBER_BOXES], Mat &combined_binary) {
 
 	//Compute edges, return bool-pointer indicating which boxes have post
 
@@ -21,7 +21,7 @@ bool* computeEdges(Mat images[6]) {
 	Scalar colour(255);
 	
 	//Perform Canny on each perspective transform
-	for (i = 0; i < 6; i++) { 
+	for (i = 0; i < NUMBER_BOXES; i++) { 
 		
 		//1. perform gaussian blur to smooth the image
 		//choosing 3x3 size for the time being
@@ -31,9 +31,9 @@ bool* computeEdges(Mat images[6]) {
 		cvtColor(images[i], gray_images[i], COLOR_BGR2GRAY);
 
 		//3. use the built in canny function
-		//again using 3 as kernel size for time being
-		//Canny has thresholding built in. I have set the low threshold (and hence low threshold ratio) to zero
+		//Canny has thresholding built in. 
 		Canny(gray_images[i], binary_edges[i], 50, 110);
+
 
 	}
 
@@ -48,9 +48,9 @@ bool* computeEdges(Mat images[6]) {
 	//Since things are rarely perfect, I have a "closeEnough" function
 
 	//Potential improvement: When counting an edge, in order to be stricter about what we count, check if the pixels to the left and right are 0.
-	//But this work pretty well, I only spotted 2/3 false negatives out of 95 frames
+	//But this works pretty well
 
-	for (i = 0; i < 6; i++) {
+	for (i = 0; i < NUMBER_BOXES; i++) {
 		for (int x = 0; x < binary_edges[i].cols; x++) {
 			if (binary_edges[i].at<uchar>(10, x) > 0) counts1[i]++;
 			if (binary_edges[i].at<uchar>(20, x) > 0) counts2[i]++;
@@ -73,8 +73,10 @@ bool* computeEdges(Mat images[6]) {
 	if(post_present[4]) putText(combined, "Post", Point2f(0, 270), FONT_HERSHEY_SIMPLEX, 0.4, colour);
 	if(post_present[5]) putText(combined, "Post", Point2f(90, 270), FONT_HERSHEY_SIMPLEX, 0.4, colour);	//Bottom right...
 
-
-	imshow("Binary Edge image", combined);
+	
+	
+	//imshow("Binary Edge image", combined);
+	combined_binary = combined;
 
 	//From looking at the output of the count, we get 10 edges for a empty postbox.
 

@@ -1,7 +1,7 @@
 #include "utilities.h"
 
 bool detectMovementGMM(Mat frame, Ptr<BackgroundSubtractor> background_model) {
-
+	//NOT USED//
 	Mat foreground_mask;
 	Mat gray_frame;
 
@@ -25,7 +25,7 @@ bool detectMovementGMM(Mat frame, Ptr<BackgroundSubtractor> background_model) {
 bool detectMovement_FrameDifference(Mat cur_frame, Mat &prev_frame) {
 
 	//Will detect motion. But what about someone who's just decided to park themselves infront of the camera?
-	//Well we won't detect movement. So we'll have to check if we can see the stripes
+	//Well we won't detect movement. So we'll have to check if we can see the stripes... 
 
 	static Mat diff_frame;
 
@@ -38,8 +38,9 @@ bool detectMovement_FrameDifference(Mat cur_frame, Mat &prev_frame) {
 		threshold(diff_frame, diff_frame, 50, 255, THRESH_BINARY);
 
 		//Having looked at the amount of non-zero values for frames with movement...
-		//cout << countNonZero(diff_frame) << endl;
+		//cout << "\t" << countNonZero(diff_frame) << endl;
 
+		imshow("Difference image", diff_frame);
 		prev_frame = cur_frame;
 		
 		if (countNonZero(diff_frame) >= 500) return true;
@@ -51,6 +52,7 @@ bool detectMovement_FrameDifference(Mat cur_frame, Mat &prev_frame) {
 
 	}
 	else {
+		//This will occur from the first frame being processed.
 		prev_frame = cur_frame;
 		return false;
 	}
